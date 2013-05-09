@@ -1,0 +1,15 @@
+﻿@using System
+@using System.Configuration
+@using System.Web.Helpers
+@using SteamParty.Core
+@{
+    var steamIds = Request.QueryString["steamIds"].Split(',');
+
+    var api = new SteamApi(ConfigurationManager.AppSettings["ApiKey"]);
+
+    var comparer = new Comparer(api);
+
+    var games = comparer.Compare(Array.ConvertAll(steamIds, long.Parse));
+    
+    Json.Write(Json.Encode(games), Response.Output);
+}

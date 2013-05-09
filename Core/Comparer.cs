@@ -14,17 +14,16 @@ namespace SteamParty.Core
             _api = api;
         }
 
-        public Dictionary<Game, List<Player>> Compare(IList<long> steamIds)
+        public List<GamePlayers> Compare(IList<long> steamIds)
         {
             var players = _api.GetPlayerSummaries(steamIds);
             return Compare(players);
         }
 
-        public Dictionary<Game, List<Player>> Compare(IList<Player> players)
+        public List<GamePlayers> Compare(IList<Player> players)
         {
             var gameCount = new Dictionary<int, Tuple<Game, List<Player>>>();
 
-            // 1. Query Steam API and get list of owned games for everyone
             foreach (var player in players)
             {
                 foreach (var game in _api.GetOwnedGames(player))
@@ -40,19 +39,23 @@ namespace SteamParty.Core
                 }
             }
 
-            // 4. Sort the results
             return (from g in gameCount
-                         where g.Value.Item2.Count > 1
-                         orderby g.Value.Item2.Count descending, g.Value.Item1.Playtime descending 
-                         select g).ToDictionary(pair => pair.Value.Item1, pair => pair.Value.Item2);
-
+                    where g.Value.Item2.Count > 1
+                    orderby g.Value.Item2.Count descending, g.Value.Item1.Playtime descending
+                    select new GamePlayers()
+                        {
+                            AppId = g.Value.Item1.AppId,
+                            IconUrl = g.Value.Item1.IconUrl,
+                            LogoUrl = g.Value.Item1.LogoUrl,
+                            Name = g.Value.Item1.Name,
+                            Playtime = g.Value.Item1.Playtime,
+                            Players = g.Value.Item2
+                        }).ToList();
         }
     }
 
-    public struct GameComparaison
+    public class GamePlayers: Game
     {
-        public Game Game { get; set; }
-        public IList<Player> Players { get; set; }
-        public int Totalplaytime { get; set; }
+        public List<Player> Players;
     }
 }

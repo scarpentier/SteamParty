@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
 using System.Text;
-using System.Web;
 using System.Web.UI;
-using System.Web.UI.WebControls;
 using SteamParty.Core;
 
 namespace SteamParty.Web
@@ -31,8 +27,8 @@ namespace SteamParty.Web
 
             foreach (var game in games)
             {
-                sb.Append(string.Format("<tr><td>{0}<br/><img src='{1}'/></td><td>{2}</td><td>", game.Key.Name, game.Key.LogoUrl, game.Key.Playtime));
-                foreach (var player in game.Value)
+                sb.Append(string.Format("<tr><td>{0}<br/><img src='{1}'/></td><td>{2}</td><td>", game.Name, game.LogoUrl, game.Playtime));
+                foreach (var player in game.Players)
                 {
                     sb.Append(string.Format("<img src='{0}' />", player.AvatarUrl64));
                 }
