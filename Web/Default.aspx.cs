@@ -27,11 +27,11 @@ namespace SteamParty.Web
             var games = comparer.Compare(Array.ConvertAll(steamids, long.Parse));
 
             var sb = new StringBuilder();
-            sb.Append("<table>");
+            sb.Append("<table><tr><th>Game</th><th>Hours</th><th>Players</th></tr>");
 
             foreach (var game in games)
             {
-                sb.Append(string.Format("<tr><td>{0}<br/><img src='{1}'/></td><td>", game.Key.AppId, game.Key.LogoUrl));
+                sb.Append(string.Format("<tr><td>{0}<br/><img src='{1}'/></td><td>{2}</td><td>", game.Key.Name, game.Key.LogoUrl, game.Key.Playtime));
                 foreach (var player in game.Value)
                 {
                     sb.Append(string.Format("<img src='{0}' />", player.AvatarUrl64));

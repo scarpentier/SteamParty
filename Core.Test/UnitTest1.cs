@@ -22,10 +22,13 @@ namespace SteamParty.Core.Test
                 {
                     76561197975995523, // ice_mouton
                     76561197962208538, // dubispacebar
+                    76561197965572012, // siliticx
                 };
 
             var c = new Comparer(_api);
             var games = c.Compare(list);
+
+            Assert.IsTrue(games.Count > 0);
         }
 
         [TestMethod]

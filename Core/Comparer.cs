@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using SteamParty.Core.SteamObjects;
 
@@ -13,31 +14,45 @@ namespace SteamParty.Core
             _api = api;
         }
 
-        public IDictionary<Game, IList<Player>> Compare(IList<long> steamIds)
+        public Dictionary<Game, List<Player>> Compare(IList<long> steamIds)
         {
             var players = _api.GetPlayerSummaries(steamIds);
             return Compare(players);
         }
 
-        public IDictionary<Game, IList<Player>> Compare(IList<Player> players)
+        public Dictionary<Game, List<Player>> Compare(IList<Player> players)
         {
-            var gameCount = new Dictionary<Game, IList<Player>>();
+            var gameCount = new Dictionary<int, Tuple<Game, List<Player>>>();
 
+            // 1. Query Steam API and get list of owned games for everyone
             foreach (var player in players)
             {
                 foreach (var game in _api.GetOwnedGames(player))
                 {
-                    if (!gameCount.ContainsKey(game))
-                        gameCount.Add(game, new List<Player>());
+                    if (!gameCount.ContainsKey(game.AppId))
+                    {
+                        gameCount.Add(game.AppId, Tuple.Create(game, new List<Player>()));
+                        gameCount[game.AppId].Item1.Playtime = 0; // Reset playtime
+                    }
 
-                    gameCount[game].Add(player);
+                    gameCount[game.AppId].Item1.Playtime += game.Playtime;
+                    gameCount[game.AppId].Item2.Add(player);
                 }
             }
 
-            // Sort the results
-            gameCount = (from g in gameCount where g.Value.Count > 1 orderby g.Value.Count descending select g).ToDictionary(pair => pair.Key, pair => pair.Value);
+            // 4. Sort the results
+            return (from g in gameCount
+                         where g.Value.Item2.Count > 1
+                         orderby g.Value.Item2.Count descending, g.Value.Item1.Playtime descending 
+                         select g).ToDictionary(pair => pair.Value.Item1, pair => pair.Value.Item2);
 
-            return gameCount;
         }
+    }
+
+    public struct GameComparaison
+    {
+        public Game Game { get; set; }
+        public IList<Player> Players { get; set; }
+        public int Totalplaytime { get; set; }
     }
 }

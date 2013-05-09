@@ -9,7 +9,7 @@
 <body>
     <form id="form1" runat="server">
     <div>
-        <asp:TextBox ID="TextBox1" runat="server" Width="564px">76561197975995523,76561197962208538</asp:TextBox><asp:Button ID="Button1" runat="server" Text="Button" OnClick="Button1_Click" />
+        <asp:TextBox ID="TextBox1" runat="server" Width="564px">76561197975995523,76561197962208538,76561197965572012</asp:TextBox><asp:Button ID="Button1" runat="server" Text="Button" OnClick="Button1_Click" />
     </div>
         <asp:Literal ID="Literal1" runat="server"></asp:Literal>
     </form>
