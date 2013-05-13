@@ -14,7 +14,7 @@ namespace SteamParty.Core
             _api = api;
         }
 
-        public List<GamePlayers> Compare(IList<long> steamIds)
+        public List<GamePlayers> Compare(IList<string> steamIds)
         {
             var players = _api.GetPlayerSummaries(steamIds);
             return Compare(players);

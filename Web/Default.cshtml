@@ -2,59 +2,71 @@
 
 <html>
     <head>
-        <title>title</title>
+        <title>SteamParty</title>
         <script src="Scripts/jquery-2.0.0.js"></script>
+        <script src="Scripts/jquery-ui-1.10.2.js"></script>
         <script src="Scripts/knockout-2.2.1.js"></script>
         <script src="Scripts/knockout.mapping-latest.js"></script>
+        <link href="Content/themes/base/jquery-ui.css" rel="stylesheet" />
         <script type="text/javascript">
-            var ids = new Array();
-            ids[0] = "76561197975995523"; // ice_mouton
-            ids[1] = "76561197962208538"; // dubispacebar
-            ids[2] = "76561197965572012"; // siliticx
-            
-            //$(document).ready(function () {
-            //    var viewModel = {};
-            //    $.getJSON('/jsonservice', { steamids: ids.join(",") }, function (data) {
-            //        viewModel.model = ko.mapping.fromJS(data.toString());
-            //        ko.applyBindings(viewModel);
-            //    }
-            //    );
-            //});
-            
-            function AppViewModel() {
-                var self = this;
-                self.steamIds = ko.observable('');
-                self.resultData = ko.observable(); // No initial value
 
-                self.getCompare = function () {
-                    $.getJSON('/jsonservice', { steamids: ids.join(",") }, function (data) {
-                        ko.mapping.fromJS(data);
+            $(document).ready(function () {
+                
+                $("button").button();
+
+                function AppViewModel() {
+                    var self = this;
+                    self.steamIds = ko.observable("76561197975995523,76561197962208538,76561197965572012");
+                    self.resultData = ko.mapping.fromJSON("");
+
+                    this.getCompare = function () {
+                        $.getJSON('/jsonservice', { steamids: self.steamIds }, function (data) {
+                            ko.mapping.fromJSON(data, self.resultData);
+                            console.log(self.resultData);
+                        });
+                    };
+                }
+
+                ko.applyBindings(new AppViewModel());
+                
+                $('#loading')
+                    .hide()  // hide it initially
+                    .ajaxStart(function () {
+                        $(this).show();
+                    })
+                    .ajaxStop(function () {
+                        $(this).hide();
                     });
-                };
-            }
-
-            ko.applyBindings(new AppViewModel());
+                
+            });
+            
         </script>
     </head>
     <body>
         
         <form data-bind="submit: getCompare">
-            Steam Ids:<input data-bind="value: steamIds" value="76561197975995523,76561197962208538,76561197965572012" />
+            Steam Ids:<input data-bind="value: steamIds" />
             <button type="submit">Compare</button>
         </form>
         
         <table>
-            <tbody data-bind="with: resultData">
+            <thead>
+                <th>Game</th>
+                <th>Hours played</th>
+                <th>Players</th>
+            </thead>
+            <tbody data-bind="foreach: resultData">
                 <tr>
-                    <td><span data-bind="text: Name"></span></td>
+                    <td><img data-bind="attr:{src: LogoUrl, alt: Name, title: Name}" /></td>
+                    <td><span data-bind="text: Playtime"></span></td>
                     <td>
                         <div data-bind="foreach: Players">
-                            <img data-bind="src: Avatar64"/>
+                            <img data-bind="attr:{src: AvatarUrl64, alt: DisplayName, title: DisplayName}" />
                         </div>
                     </td>
                 </tr>
             </tbody>
         </table>
-        
+        <div id="loading"><img src="Content/spin.gif"/> Hold on...</div>
     </body>
 </html>

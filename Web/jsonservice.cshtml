@@ -1,5 +1,6 @@
 ﻿@using System
 @using System.Configuration
+@using System.Linq
 @using System.Web.Helpers
 @using SteamParty.Core
 @{
@@ -9,7 +10,7 @@
 
     var comparer = new Comparer(api);
 
-    var games = comparer.Compare(Array.ConvertAll(steamIds, long.Parse));
+    var games = comparer.Compare(steamIds);
     
     Json.Write(Json.Encode(games), Response.Output);
 }

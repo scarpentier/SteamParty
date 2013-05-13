@@ -4,7 +4,7 @@ namespace SteamParty.Core.SteamObjects
 {
     public class Player : IEquatable<Player>
     {
-        public long SteamId { get; set; }
+        public string SteamId { get; set; }
         public string DisplayName { get; set; }
         public string ProfileUrl { get; set; }
         public string AvatarUrl32 { get; set; }
