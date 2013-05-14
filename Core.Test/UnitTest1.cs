@@ -9,6 +9,13 @@ namespace SteamParty.Core.Test
         private readonly SteamApi _api = new SteamApi("89F7BE5A7EA33D7538DC6B7CB8FC9163");
 
         [TestMethod]
+        public void GetSteamIdFromName()
+        {
+            var steamid = _api.GetSteamIdFromName("dubispacebar");
+            Assert.AreEqual("76561197962208538", steamid);
+        }
+
+        [TestMethod]
         public void GetOwnedGames()
         {
             var games = _api.GetOwnedGames("76561197960434622");
