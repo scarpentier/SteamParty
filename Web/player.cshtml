@@ -1,0 +1,13 @@
+﻿@using System
+@using System.Configuration
+@using System.Web.Helpers
+@using SteamParty.Core
+@{
+    var steamId = Request.QueryString["steamid"];
+
+    var api = new SteamApi(ConfigurationManager.AppSettings["ApiKey"]);
+
+    var player = api.GetPlayerSummary(steamId);
+    
+    Json.Write(Json.Encode(player), Response.Output);
+}

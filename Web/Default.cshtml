@@ -4,26 +4,33 @@
     <head>
         <title>SteamParty</title>
         <script src="Scripts/jquery-2.0.0.js"></script>
-        <script src="Scripts/jquery-ui-1.10.2.js"></script>
         <script src="Scripts/knockout-2.2.1.js"></script>
         <script src="Scripts/knockout.mapping-latest.js"></script>
-        <link href="Content/themes/base/jquery-ui.css" rel="stylesheet" />
+        <link href="Content/main.css" rel="stylesheet" />
         <script type="text/javascript">
 
             $(document).ready(function () {
-                
-                $("button").button();
-
+                               
                 function AppViewModel() {
                     var self = this;
-                    self.steamIds = ko.observable("76561197975995523,76561197962208538,76561197965572012");
+                    self.players = ko.observableArray(ko.mapping.fromJSON(""));
                     self.resultData = ko.mapping.fromJSON("");
+                    self.playerToAdd = ko.observable("76561197965572012"); 
 
                     this.getCompare = function () {
-                        $.getJSON('/jsonservice', { steamids: self.steamIds }, function (data) {
+                        $.getJSON('/compare', { steamids: self }, function (data) {
                             ko.mapping.fromJSON(data, self.resultData);
-                            console.log(self.resultData);
+                            $("#resultsPane").show();
                         });
+                    };
+
+                    this.addPlayer = function () {
+                        if (self.playerToAdd() != "") {
+                            $.getJSON('/player', { steamid: self.playerToAdd() }, function (data) {
+                                self.players.push(ko.mapping.fromJSON(data));
+                                self.playerToAdd("");
+                            });
+                        }
                     };
                 }
 
@@ -37,36 +44,55 @@
                     .ajaxStop(function () {
                         $(this).hide();
                     });
-                
+
+                $("#resultsPane").hide();
             });
             
         </script>
     </head>
     <body>
-        
+        <h1>SteamParty</h1>
+        <div class="sub">You wanna play with friends but don't know which game you should play? SteamParty compares you and your friends' Steam library and helps you find which games to play. Less decisions, more gaming!</div>
+        <h2>Friends</h2>
+        <form data-bind="submit: addPlayer">
+            New player: <input data-bind='value: playerToAdd, valueUpdate: "afterkeydown"'/>
+            <button type="submit" data-bind="enable: playerToAdd().length > 0">Add</button>
+            <p>Players:</p>
+            
+            <table>
+                <tbody data-bind="foreach: players">
+                    <tr>
+                        <td><span data-bind="text: DisplayName"></span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </form>
         <form data-bind="submit: getCompare">
-            Steam Ids:<input data-bind="value: steamIds" />
             <button type="submit">Compare</button>
         </form>
         
-        <table>
-            <thead>
-                <th>Game</th>
-                <th>Hours played</th>
-                <th>Players</th>
-            </thead>
-            <tbody data-bind="foreach: resultData">
-                <tr>
-                    <td><img data-bind="attr:{src: LogoUrl, alt: Name, title: Name}" /></td>
-                    <td><span data-bind="text: Playtime"></span></td>
-                    <td>
-                        <div data-bind="foreach: Players">
-                            <img data-bind="attr:{src: AvatarUrl64, alt: DisplayName, title: DisplayName}" />
-                        </div>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <div id="resultsPane">
+            <h2>Games</h2>        
+            <table>
+                <thead>
+                    <th>Game</th>
+                    <th>Hours played</th>
+                    <th>Players</th>
+                </thead>
+                <tbody data-bind="foreach: resultData">
+                    <tr>
+                        <td><img data-bind="attr:{src: LogoUrl, alt: Name, title: Name}" /></td>
+                        <td><span data-bind="text: Playtime"></span></td>
+                        <td>
+                            <div data-bind="foreach: Players">
+                                <img data-bind="attr:{src: AvatarUrl64, alt: DisplayName, title: DisplayName}" />
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
         <div id="loading"><img src="Content/spin.gif"/> Hold on...</div>
     </body>
 </html>
