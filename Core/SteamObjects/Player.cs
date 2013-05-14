@@ -10,8 +10,8 @@ namespace SteamParty.Core.SteamObjects
         public string AvatarUrl32 { get; set; }
         public string AvatarUrl64 { get; set; }
         public string AvatarUrl184 { get; set; }
+        public bool IsPublic { get; set; } // CommunityVisibility VisibilityState 1 = private, friendsonly; 3 = public
         public PlayerStatusEnum Status { get; set; }
-        public bool ProfileState { get; set; }
         public DateTime LastLogoff { get; set; }
         public bool CommentPermission { get; set; }
 

@@ -6,6 +6,7 @@
         <script src="Scripts/jquery-2.0.0.js"></script>
         <script src="Scripts/knockout-2.2.1.js"></script>
         <script src="Scripts/knockout.mapping-latest.js"></script>
+        <script src="Scripts/jquery.cookie.js"></script>
         <link href="Content/bootstrap.css" rel="stylesheet" />
         <link href="Content/extra.css" rel="stylesheet" />
         <script type="text/javascript">
@@ -27,10 +28,16 @@
                                     return;
                                 }
                                 var json = JSON.parse(data);
+
+                                $('#loadingPlayer').hide();
+
+                                if (!json.IsPublic) {
+                                    $('#errorPrivateProfile').show();
+                                    return;
+                                }
                                 var player = { SteamId: json.SteamId, DisplayName: json.DisplayName, AvatarUrl32: json.AvatarUrl32 };
                                 self.players.push(player);
                                 self.playerToAdd("");
-                                $('#loadingPlayer').hide();
                                 if (self.players().length > 1) $('#errorNotEnoughPlayers').hide();
                             });
                         }
@@ -66,6 +73,7 @@
                 $('#loadingCompare').hide();
                 $("#resultsPane").hide();
                 $('#errorNotEnoughPlayers').hide();
+                $('#errorPrivateProfile').hide();
                 
                 //$('#playerToAddId').popover({ trigger: "focus", title: "title", content: "test" });
                 $('#demo').click(function () {
@@ -102,8 +110,17 @@
                         </div>
                         <div class="span4"><a href="#" id="demo">Add some random players</a></div>
                     </div>
-
+                    
                     <p></p>
+                    <div id="errorPrivateProfile" class="alert alert-block fade in">
+                        @*<a class="close" data-dismiss="alert" href="#">&times;</a>*@
+                        <h4>Private profile</h4>
+                        <p>We can't compare this player because its community profile is not set to <strong>public</strong>. Steam dosen't want to tell us what games this player owns.</p>
+                        <p>
+                            <a class="btn" href="#" onclick="$('.alert').hide()">Ok</a> <a class="btn btn-info" href="https://support.steampowered.com/kb_article.php?ref=4113-YUDH-6401">How do I change that?</a>
+                        </p>
+                    </div>
+
                     <table class="table">
                         <tbody data-bind="foreach: players">
                             <tr>

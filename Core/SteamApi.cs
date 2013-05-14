@@ -56,7 +56,7 @@ namespace SteamParty.Core
             var a = o["response"]["players"].Select(p => new Player
                 {
                     SteamId = (string) p["steamid"],
-                    ProfileState = (bool) p["profilestate"],
+                    IsPublic = ((string)p["communityvisibilitystate"]) == "3",
                     DisplayName = (string)p["personaname"],
                     LastLogoff = DateTimeExtension.FromUnix((long) p["lastlogoff"]),
                     CommentPermission = (bool)(p["commentpermission"] ?? false),
