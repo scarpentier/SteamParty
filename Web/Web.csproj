@@ -52,31 +52,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\main.css" />
     <Content Include="Content\spin.gif" />
-    <Content Include="Content\themes\dot-luv\images\animated-overlay.gif" />
-    <Content Include="Content\themes\dot-luv\images\ui-bg_diagonals-thick_15_0b3e6f_40x40.png" />
-    <Content Include="Content\themes\dot-luv\images\ui-bg_dots-medium_30_0b58a2_4x4.png" />
-    <Content Include="Content\themes\dot-luv\images\ui-bg_dots-small_20_333333_2x2.png" />
-    <Content Include="Content\themes\dot-luv\images\ui-bg_dots-small_30_a32d00_2x2.png" />
-    <Content Include="Content\themes\dot-luv\images\ui-bg_dots-small_40_00498f_2x2.png" />
-    <Content Include="Content\themes\dot-luv\images\ui-bg_flat_0_aaaaaa_40x100.png" />
-    <Content Include="Content\themes\dot-luv\images\ui-bg_flat_40_292929_40x100.png" />
-    <Content Include="Content\themes\dot-luv\images\ui-bg_gloss-wave_20_111111_500x100.png" />
-    <Content Include="Content\themes\dot-luv\images\ui-icons_00498f_256x240.png" />
-    <Content Include="Content\themes\dot-luv\images\ui-icons_98d2fb_256x240.png" />
-    <Content Include="Content\themes\dot-luv\images\ui-icons_9ccdfc_256x240.png" />
-    <Content Include="Content\themes\dot-luv\images\ui-icons_ffffff_256x240.png" />
-    <Content Include="Content\themes\dot-luv\jquery-ui-1.10.3.custom.css" />
-    <Content Include="Content\themes\dot-luv\jquery-ui-1.10.3.custom.min.css" />
-    <Content Include="Content\themes\main.css" />
     <Content Include="packages.config" />
-    <Content Include="jsonservice.cshtml" />
+    <Content Include="compare.cshtml" />
     <Content Include="Default.cshtml" />
+    <Content Include="player.cshtml" />
+    <None Include="Scripts\jquery-2.0.0.intellisense.js" />
+    <Content Include="Scripts\jquery-2.0.0.js" />
+    <Content Include="Scripts\jquery-2.0.0.min.js" />
     <Content Include="Scripts\knockout-2.2.1.debug.js" />
     <Content Include="Scripts\knockout-2.2.1.js" />
     <Content Include="Scripts\knockout.mapping-latest.debug.js" />
     <Content Include="Scripts\knockout.mapping-latest.js" />
     <Content Include="Web.config" />
+    <Content Include="Scripts\jquery-2.0.0.min.map" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
