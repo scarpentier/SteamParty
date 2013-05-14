@@ -18,7 +18,7 @@ namespace SteamParty.Core.Test
         [TestMethod]
         public void GetOwnedGames()
         {
-            var games = _api.GetOwnedGames("76561197960434622");
+            var games = _api.GetOwnedGames("76561198047894258");
             Assert.IsTrue(games.Count > 0);
         }
 

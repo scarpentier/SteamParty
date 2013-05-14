@@ -84,6 +84,9 @@ namespace SteamParty.Core
             var jsonData = new System.Net.WebClient().DownloadString(url);
 
             var o = JObject.Parse(jsonData);
+
+            if (!o["response"].Any()) return null; // Will happen if the profile isn't public
+
             var a = o["response"]["games"].Select(g => new Game
                 {
                     AppId = (int)g["appid"],

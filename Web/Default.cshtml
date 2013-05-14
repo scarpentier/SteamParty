@@ -1,24 +1,26 @@
 ﻿<!DOCTYPE html>
 
-<html>
+<html lang="en">
     <head>
         <title>SteamParty</title>
         <script src="Scripts/jquery-2.0.0.js"></script>
         <script src="Scripts/knockout-2.2.1.js"></script>
         <script src="Scripts/knockout.mapping-latest.js"></script>
-        <link href="Content/main.css" rel="stylesheet" />
+        <link href="Content/bootstrap.css" rel="stylesheet" />
+        <link href="Content/extra.css" rel="stylesheet" />
         <script type="text/javascript">
 
             $(document).ready(function () {
                                
-                function AppViewModel() {
+                function appViewModel() {
                     var self = this;
-                    self.playerToAdd = ko.observable("76561197965572012");
+                    self.playerToAdd = ko.observable("");
                     self.players = ko.observableArray([]);
                     self.resultData = ko.mapping.fromJSON("");
 
                     this.addPlayer = function () {
                         if (self.playerToAdd() != "") {
+                            $('#loadingPlayer').show();
                             $.getJSON('/player', { steamid: self.playerToAdd() }, function (data) {
                                 if (data == "null") {
                                     alert("Invalid player name or ID");
@@ -28,6 +30,8 @@
                                 var player = { SteamId: json.SteamId, DisplayName: json.DisplayName, AvatarUrl32: json.AvatarUrl32 };
                                 self.players.push(player);
                                 self.playerToAdd("");
+                                $('#loadingPlayer').hide();
+                                if (self.players().length > 1) $('#errorNotEnoughPlayers').hide();
                             });
                         }
                     };
@@ -38,9 +42,11 @@
                     
                     this.getCompare = function () {
                         if (self.players().length < 2) {
-                            alert("Please add 2 or more players to compare");
+                            $('#errorNotEnoughPlayers').show();
                             return;
                         }
+                        $('#errorNotEnoughPlayers').hide();
+                        $('#loadingCompare').show();
                         var steamIds = [];
                         for (var i = 0; i < self.players().length; i++) {
                             steamIds.push(self.players()[i].SteamId);
@@ -48,71 +54,128 @@
                         $.getJSON('/compare', { steamids: steamIds.join(',') }, function (data) {
                             ko.mapping.fromJSON(data, self.resultData);
                             $("#resultsPane").show();
+                            $('#loadingCompare').hide();
                         });
                     };
                 }
 
-                ko.applyBindings(new AppViewModel());
-                
-                $('#loading')
-                    .hide()  // hide it initially
-                    .ajaxStart(function () {
-                        $(this).show();
-                    })
-                    .ajaxStop(function () {
-                        $(this).hide();
-                    });
+                var vm = new appViewModel();
+                ko.applyBindings(vm);
 
+                $('#loadingPlayer').hide();
+                $('#loadingCompare').hide();
                 $("#resultsPane").hide();
+                $('#errorNotEnoughPlayers').hide();
+                
+                //$('#playerToAddId').popover({ trigger: "focus", title: "title", content: "test" });
+                $('#demo').click(function () {
+                    vm.playerToAdd('76561197975995523');
+                    vm.addPlayer();
+                    vm.playerToAdd('76561197962208538');
+                    vm.addPlayer();
+                    vm.playerToAdd('76561197965572012');
+                    vm.addPlayer();
+                    return false;
+                });
+                
             });
             
         </script>
     </head>
     <body>
-        <h1>SteamParty</h1>
-        <div class="sub">You wanna play with friends but don't know which game you should play? SteamParty can help by comparing you and your friends' Steam library. Less decisions, more gaming!</div>
-        <h2>Players</h2>
-        <form data-bind="submit: addPlayer">
-            New player: <input data-bind='value: playerToAdd, valueUpdate: "afterkeydown"'/>
-            <button type="submit" data-bind="enable: playerToAdd().length > 0">Add</button>
-            <p>Players:</p>
-            
-            <table>
-                <tbody data-bind="foreach: players">
-                    <tr>
-                        <td><a href='#' data-bind='click: $root.removePlayer'>X</a></td>
-                        <td><img data-bind="attr: {src: AvatarUrl32 }" /></td>
-                        <td><span data-bind="text: DisplayName"></span></td>
-                    </tr>
-                </tbody>
-            </table>
-
-        </form>
-        <form data-bind="submit: getCompare">
-            <button type="submit">Compare</button>
-        </form>
-        
-        <div id="resultsPane">
-            <h2>Games</h2>        
-            <table>
-                <thead>
-                    <th>Game</th>
-                    <th>Hours played</th>
-                    <th>Players</th>
-                </thead>
-                <tbody data-bind="foreach: resultData">
-                    <tr>
-                        <td><img data-bind="attr:{src: LogoUrl, alt: Name, title: Name}" /></td>
-                        <td><span data-bind="text: Playtime"></span></td>
-                        <td>
-                            <div data-bind="foreach: Players">
-                                <img data-bind="attr:{src: AvatarUrl64, alt: DisplayName, title: DisplayName}" />
+        <div id="wrap">
+            <div class="container">
+                <h1>SteamParty</h1>
+                <p class="lead">You wanna play with friends but don't know which game you should play?<br/>
+                SteamParty can help by comparing you and your friends' Steam libraries.</p>
+                <form class="form-inline" data-bind="submit: addPlayer">
+                    
+                    <div class="row">
+                        <div class="span4">
+                            <div class="input-append">
+                                <input id="playerToAddId" type="text" class="input-large" placeholder="Steam ID or Name" data-bind='value: playerToAdd, valueUpdate: "afterkeydown"'/>
+                                <button type="submit" class="btn" data-bind="enable: playerToAdd().length > 0">Add</button>
                             </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                        </div>
+                        <div class="span4">
+                            <div id="loadingPlayer"><img src="Content/spin.gif"/> Fetching...</div>
+                        </div>
+                        <div class="span4"><a href="#" id="demo">Add some random players</a></div>
+                    </div>
+
+                    <p></p>
+                    <table class="table">
+                        <tbody data-bind="foreach: players">
+                            <tr>
+                                <td style="width: 75px; vertical-align: middle"><i class="icon-remove"></i><a href='#' data-bind='click: $root.removePlayer'>Remove</a></td>
+                                <td style="width: 50px; vertical-align: middle"><img data-bind="attr: {src: AvatarUrl32 }" /></td>
+                                <td style="vertical-align: middle"><span data-bind="text: DisplayName"></span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </form>
+
+                <div class="row">
+                    <div class="span2">
+                        <form data-bind="submit: getCompare">
+                            <button type="submit" class="btn btn-primary" id="compareBtn" data-loading-text="Working...">Compare</button>
+                        </form>
+                    </div>
+                    <div class="span10">
+                        <div id="loadingCompare"><img src="Content/spin.gif"/> Please hold...</div>
+                        <div class="alert alert-error" id="errorNotEnoughPlayers"><strong>Whoa there big guy!</strong> Please add at least 2 players to compare</div>
+                    </div>
+                </div>
+        
+                <div id="resultsPane">
+                    <h2>Games</h2>        
+                    <table class="table">
+                        <thead>
+                            <th>Game</th>
+                            <th>Hours played</th>
+                            <th>Players</th>
+                        </thead>
+                        <tbody data-bind="foreach: resultData">
+                            <tr>
+                                <td><img data-bind="attr:{src: LogoUrl, alt: Name, title: Name}" /></td>
+                                <td><span data-bind="text: Playtime"></span></td>
+                                <td>
+                                    <div data-bind="foreach: Players">
+                                        <img data-bind="attr:{src: AvatarUrl64, alt: DisplayName, title: DisplayName}" />
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="push"></div>
         </div>
-        <div id="loading"><img src="Content/spin.gif"/> Hold on...</div>
+        
+        <footer class="footer">
+            <div class="container">
+                <p>Coded with love by <a href="http://spacebar.ca">Simon Carpentier</a>.</p>
+                <ul class="footer-links">
+                    <li><a href="https://github.com/scarpentier/SteamParty/">Source code</a></li>
+                    <li class="muted">&middot;</li>
+                    <li><a href="https://github.com/scarpentier/SteamParty/issues?state=open">Issues</a></li>
+                    <li class="muted">&middot;</li>
+                    <li><a href="https://github.com/scarpentier/SteamParty/commits/master">Changelog</a></li>
+                </ul>
+            </div>
+        </footer>
+
+        <script type="text/javascript">
+            var _gaq = _gaq || [];
+            _gaq.push(['_setAccount', 'UA-40922409-1']);
+            _gaq.push(['_trackPageview']);
+
+            (function () {
+                var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+            })();
+        </script>
     </body>
 </html>
