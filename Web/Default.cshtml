@@ -13,24 +13,42 @@
                                
                 function AppViewModel() {
                     var self = this;
-                    self.players = ko.observableArray(ko.mapping.fromJSON(""));
+                    self.playerToAdd = ko.observable("76561197965572012");
+                    self.players = ko.observableArray([]);
                     self.resultData = ko.mapping.fromJSON("");
-                    self.playerToAdd = ko.observable("76561197965572012"); 
-
-                    this.getCompare = function () {
-                        $.getJSON('/compare', { steamids: self }, function (data) {
-                            ko.mapping.fromJSON(data, self.resultData);
-                            $("#resultsPane").show();
-                        });
-                    };
 
                     this.addPlayer = function () {
                         if (self.playerToAdd() != "") {
                             $.getJSON('/player', { steamid: self.playerToAdd() }, function (data) {
-                                self.players.push(ko.mapping.fromJSON(data));
+                                if (data == "null") {
+                                    alert("Invalid player name or ID");
+                                    return;
+                                }
+                                var json = JSON.parse(data);
+                                var player = { SteamId: json.SteamId, DisplayName: json.DisplayName, AvatarUrl32: json.AvatarUrl32 };
+                                self.players.push(player);
                                 self.playerToAdd("");
                             });
                         }
+                    };
+
+                    this.removePlayer = function(player) {
+                        self.players.remove(player);
+                    };
+                    
+                    this.getCompare = function () {
+                        if (self.players().length < 2) {
+                            alert("Please add 2 or more players to compare");
+                            return;
+                        }
+                        var steamIds = [];
+                        for (var i = 0; i < self.players().length; i++) {
+                            steamIds.push(self.players()[i].SteamId);
+                        }
+                        $.getJSON('/compare', { steamids: steamIds.join(',') }, function (data) {
+                            ko.mapping.fromJSON(data, self.resultData);
+                            $("#resultsPane").show();
+                        });
                     };
                 }
 
@@ -53,7 +71,7 @@
     <body>
         <h1>SteamParty</h1>
         <div class="sub">You wanna play with friends but don't know which game you should play? SteamParty can help by comparing you and your friends' Steam library. Less decisions, more gaming!</div>
-        <h2>Friends</h2>
+        <h2>Players</h2>
         <form data-bind="submit: addPlayer">
             New player: <input data-bind='value: playerToAdd, valueUpdate: "afterkeydown"'/>
             <button type="submit" data-bind="enable: playerToAdd().length > 0">Add</button>
@@ -62,6 +80,8 @@
             <table>
                 <tbody data-bind="foreach: players">
                     <tr>
+                        <td><a href='#' data-bind='click: $root.removePlayer'>X</a></td>
+                        <td><img data-bind="attr: {src: AvatarUrl32 }" /></td>
                         <td><span data-bind="text: DisplayName"></span></td>
                     </tr>
                 </tbody>

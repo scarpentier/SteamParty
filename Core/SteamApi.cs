@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Xml.Linq;
 using Newtonsoft.Json.Linq;
 using SteamParty.Core.SteamObjects;
 
@@ -16,8 +17,31 @@ namespace SteamParty.Core
             Key = key;
         }
 
+        public string GetSteamIdFromName(string name)
+        {
+            const string steamCommunityProfileUrl = "http://steamcommunity.com/id/{0}/?xml=1";
+            var url = string.Format(steamCommunityProfileUrl, name);
+
+            try
+            {
+                var xml = XDocument.Load(url);
+                return xml.Element("profile").Element("steamID64").Value;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         public Player GetPlayerSummary(string steamId)
         {
+            long n;
+            if (!long.TryParse(steamId, out n))
+            {
+                steamId = GetSteamIdFromName(steamId);
+                if (string.IsNullOrEmpty(steamId)) return null;
+            }
+
             return GetPlayerSummaries(new [] { steamId })[0];
         }
 
