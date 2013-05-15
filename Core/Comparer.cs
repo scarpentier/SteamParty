@@ -28,13 +28,15 @@ namespace SteamParty.Core
             {
                 foreach (var game in _api.GetOwnedGames(player))
                 {
+                    var gamePlayTime = game.Playtime;
+
                     if (!gameCount.ContainsKey(game.AppId))
                     {
                         gameCount.Add(game.AppId, Tuple.Create(game, new List<Player>()));
                         gameCount[game.AppId].Item1.Playtime = 0; // Reset playtime
                     }
 
-                    gameCount[game.AppId].Item1.Playtime += game.Playtime;
+                    gameCount[game.AppId].Item1.Playtime += gamePlayTime;
                     gameCount[game.AppId].Item2.Add(player);
                 }
             }
