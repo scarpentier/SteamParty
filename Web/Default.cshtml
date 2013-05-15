@@ -37,9 +37,15 @@
                                 if (!json.IsPublic) {
                                     $('#errorPrivateProfile').show();
                                     return;
-                                }
+                                }                              
                                 
                                 var player = { SteamId: json.SteamId, DisplayName: json.DisplayName, AvatarUrl32: json.AvatarUrl32 };
+                                
+                                if ($.grep(self.players(), function (e) { return e.SteamId == player.SteamId; }).length > 0) {
+                                    $('#errorPlayerAlreadyAdded').show();
+                                    return;
+                                }
+
                                 self.players.push(player);
                                 self.playerToAdd("");
                             });
@@ -121,20 +127,9 @@
                             <a class="btn" href="#" onclick="$('#errorPrivateProfile').hide()">Ok</a> <a class="btn btn-info" href="https://support.steampowered.com/kb_article.php?ref=4113-YUDH-6401">How do I change that?</a>
                         </p>
                     </div>
-                    <div id="errorUnknownPlayer" class="alert alert-block alert-error" style="display: none">
-                        <h4>Unknown player</h4>
-                        <p>We weren't able to find this player</p>
-                        <p>
-                            <a class="btn" href="#" onclick="$('#errorUnknownPlayer').hide()">Ok</a>
-                        </p>
-                    </div>
-                    <div id="errorPlayerAlreadyAdded" class="alert alert-block" style="display: none">
-                        <h4>Player already added</h4>
-                        <p>This player was already </p>
-                        <p>
-                            <a class="btn" href="#" onclick="$('#errorPlayerAlreadyAdded').hide()">Ok</a>
-                        </p>
-                    </div>
+                    
+                    <div class="alert alert-error" style="display: none" id="errorUnknownPlayer"><a class="close" onclick="$('#errorUnknownPlayer').hide()" href="#">&times;</a><strong>Unknown player</strong> We couldn't find this player</div>                 
+                    <div class="alert" style="display: none" id="errorPlayerAlreadyAdded"><a class="close" onclick="$('#errorPlayerAlreadyAdded').hide()" href="#">&times;</a><strong>Already added</strong> This player was already added to the comparaison list</div>
 
                     <table class="table">
                         <tbody data-bind="foreach: players">
