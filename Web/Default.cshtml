@@ -3,9 +3,10 @@
 <html lang="en">
     <head>
         <title>SteamParty</title>
-        <script src="Scripts/jquery-2.0.0.js"></script>
+        <script src="Scripts/jquery-2.0.0.min.js"></script>
         <script src="Scripts/knockout-2.2.1.js"></script>
         <script src="Scripts/knockout.mapping-latest.js"></script>
+        <script src="Scripts/bootstrap.js"></script>
         <script src="Scripts/jquery.cookie.js"></script>
         <link href="Content/bootstrap.css" rel="stylesheet" />
         <link href="Content/extra.css" rel="stylesheet" />
@@ -22,23 +23,25 @@
                     this.addPlayer = function () {
                         if (self.playerToAdd() != "") {
                             $('#loadingPlayer').show();
+                            $('.alert').hide();
                             $.getJSON('/player', { steamid: self.playerToAdd() }, function (data) {
+                                $('#loadingPlayer').hide();
+                                
                                 if (data == "null") {
-                                    alert("Invalid player name or ID");
+                                    $('#errorUnknownPlayer').show();
                                     return;
                                 }
+                                
                                 var json = JSON.parse(data);
-
-                                $('#loadingPlayer').hide();
 
                                 if (!json.IsPublic) {
                                     $('#errorPrivateProfile').show();
                                     return;
                                 }
+                                
                                 var player = { SteamId: json.SteamId, DisplayName: json.DisplayName, AvatarUrl32: json.AvatarUrl32 };
                                 self.players.push(player);
                                 self.playerToAdd("");
-                                if (self.players().length > 1) $('#errorNotEnoughPlayers').hide();
                             });
                         }
                     };
@@ -69,13 +72,10 @@
                 var vm = new appViewModel();
                 ko.applyBindings(vm);
 
-                $('#loadingPlayer').hide();
-                $('#loadingCompare').hide();
-                $("#resultsPane").hide();
-                $('#errorNotEnoughPlayers').hide();
-                $('#errorPrivateProfile').hide();
+                $('#donate').popover({ html: true });
+                $('#contact').popover({ html: true });
+                $('#info').popover({ html: true });
                 
-                //$('#playerToAddId').popover({ trigger: "focus", title: "title", content: "test" });
                 $('#demo').click(function () {
                     vm.playerToAdd('76561197975995523');
                     vm.addPlayer();
@@ -95,29 +95,44 @@
             <div class="container">
                 <h1>SteamParty</h1>
                 <p class="lead">You wanna play with friends but don't know which game you should play?<br/>
-                SteamParty can help by comparing you and your friends' Steam libraries.</p>
+                    SteamParty can help by comparing you and your friends' Steam libraries.</p>
                 <form class="form-inline" data-bind="submit: addPlayer">
                     
                     <div class="row">
                         <div class="span4">
-                            <div class="input-append">
-                                <input id="playerToAddId" type="text" class="input-large" placeholder="Steam ID or Name" data-bind='value: playerToAdd, valueUpdate: "afterkeydown"'/>
+                            <div class="input-prepend input-append">
+                                <span class="add-on"><i class="icon-user"></i></span>
+                                <input id="playerToAddId" type="text" class="input-large warning" placeholder="Steam ID or Name" data-bind='value: playerToAdd, valueUpdate: "afterkeydown"' />
                                 <button type="submit" class="btn" data-bind="enable: playerToAdd().length > 0">Add</button>
+                                @*<button type="submit" id="info" class="btn" data-toggle="popover" data-placement="right" data-title="Accepted formats" data-content="<ul><li>http://steamcommunity.com/id/<strong>yourid</strong></li><li>http://steamcommunity.com/profiles/<strong>yourprofile</strong></li><li><strong>yourid</strong> or <strong>yourprofile</strong> without the url</li></ul>">?</button>*@
                             </div>
                         </div>
                         <div class="span4">
-                            <div id="loadingPlayer"><img src="Content/spin.gif"/> Fetching...</div>
+                            <div id="loadingPlayer" style="display: none"><img src="Content/spin.gif"/> Fetching...</div>
                         </div>
                         <div class="span4"><a href="#" id="demo">Add some random players</a></div>
                     </div>
                     
                     <p></p>
-                    <div id="errorPrivateProfile" class="alert alert-block fade in">
-                        @*<a class="close" data-dismiss="alert" href="#">&times;</a>*@
+                    <div id="errorPrivateProfile" class="alert alert-block" style="display: none">
                         <h4>Private profile</h4>
                         <p>We can't compare this player because its community profile is not set to <strong>public</strong>. Steam dosen't want to tell us what games this player owns.</p>
                         <p>
-                            <a class="btn" href="#" onclick="$('.alert').hide()">Ok</a> <a class="btn btn-info" href="https://support.steampowered.com/kb_article.php?ref=4113-YUDH-6401">How do I change that?</a>
+                            <a class="btn" href="#" onclick="$('#errorPrivateProfile').hide()">Ok</a> <a class="btn btn-info" href="https://support.steampowered.com/kb_article.php?ref=4113-YUDH-6401">How do I change that?</a>
+                        </p>
+                    </div>
+                    <div id="errorUnknownPlayer" class="alert alert-block alert-error" style="display: none">
+                        <h4>Unknown player</h4>
+                        <p>We weren't able to find this player</p>
+                        <p>
+                            <a class="btn" href="#" onclick="$('#errorUnknownPlayer').hide()">Ok</a>
+                        </p>
+                    </div>
+                    <div id="errorPlayerAlreadyAdded" class="alert alert-block" style="display: none">
+                        <h4>Player already added</h4>
+                        <p>This player was already </p>
+                        <p>
+                            <a class="btn" href="#" onclick="$('#errorPlayerAlreadyAdded').hide()">Ok</a>
                         </p>
                     </div>
 
@@ -140,12 +155,12 @@
                         </form>
                     </div>
                     <div class="span10">
-                        <div id="loadingCompare"><img src="Content/spin.gif"/> Please hold...</div>
-                        <div class="alert alert-error" id="errorNotEnoughPlayers"><strong>Whoa there big guy!</strong> Please add at least 2 players to compare</div>
+                        <div id="loadingCompare" style="display: none"><img src="Content/spin.gif"/> Please hold...</div>
+                        <div class="alert alert-error" style="display: none" id="errorNotEnoughPlayers"><a class="close" onclick="$('#errorNotEnoughPlayers').hide()" href="#">&times;</a><strong>Whoa there big guy!</strong> Please add at least 2 players to compare</div>
                     </div>
                 </div>
         
-                <div id="resultsPane">
+                <div id="resultsPane" style="display: none">
                     <h2>Games</h2>        
                     <table class="table">
                         <thead>
@@ -174,6 +189,10 @@
             <div class="container">
                 <p>Coded with love by <a href="http://spacebar.ca">Simon Carpentier</a>.</p>
                 <ul class="footer-links">
+                    <li><a href="#" id="contact" data-placement="top" data-title="Contact" data-content="Question, suggestion, comments, hate-mail? You can always reach me at <a href='mailto:simon.carpentier@spacebar.ca'>simon.carpentier@spacebar.ca</a>">Contact</a></li>
+                    <li class="muted">&middot;</li>
+                    <li><a id="donate" data-trigger="click" data-title="Awww you're too kind <3" data-content="Obviously I'm a gamer so <a href='http://steamcommunity.com/id/dubispacebar/'>Steam gifts</a> are really appreciated.<br/>Also feel free to send some bitcoins my way:<br/><small>1NZQqgzDyqZ4HSYUDD4Y46sXkmh7w7RQm8</small>" data-placement="top" href="#">Donate</a></li>
+                    <li class="muted">&middot;</li>
                     <li><a href="https://github.com/scarpentier/SteamParty/">Source code</a></li>
                     <li class="muted">&middot;</li>
                     <li><a href="https://github.com/scarpentier/SteamParty/issues?state=open">Issues</a></li>
@@ -182,6 +201,7 @@
                 </ul>
             </div>
         </footer>
+        <a href="https://github.com/you"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_gray_6d6d6d.png" alt="Fork me on GitHub"></a>
 
         <script type="text/javascript">
             var _gaq = _gaq || [];
