@@ -70,3 +70,8 @@ height: 60px;
     display: inline;
     padding: 0 2px;
 }
+
+.popover {
+	max-width: 330px;
+	width: auto;
+}

@@ -22,10 +22,12 @@
 
                     this.addPlayer = function () {
                         if (self.playerToAdd() != "") {
-                            $('#loadingPlayer').show();
-                            $('.alert').hide();
+                            $('#playerAddBtn').button('loading');
+                            $('#errorUnknownPlayer').hide();
+                            $('#errorPlayerAlreadyAdded').hide();
+                            $('#errorPrivateProfile').hide();
                             $.getJSON('/player', { steamid: self.playerToAdd() }, function (data) {
-                                $('#loadingPlayer').hide();
+                                $('#playerAddBtn').button('reset');
                                 
                                 if (data == "null") {
                                     $('#errorUnknownPlayer').show();
@@ -80,7 +82,7 @@
 
                 $('#donate').popover({ html: true });
                 $('#contact').popover({ html: true });
-                $('#info').popover({ html: true });
+                $('#infoAcceptedFormats').alert();
 
                 $('#demo').tooltip({ html:true });
                 $('#demo').click(function () {
@@ -105,24 +107,30 @@
                 <h1>SteamParty</h1>
                 <p class="lead">You wanna play with friends but don't know which game you should play?<br/>
                     SteamParty can help by comparing you and your friends' Steam libraries.</p>
+                
+                <div class="alert alert-info" id="infoAcceptedFormats" style="width: 330px">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <h4>Accepted formats</h4>
+                    <ul>
+                        <li>http://steamcommunity.com/id/<strong>yourid</strong></li>
+                        <li>http://steamcommunity.com/profiles/<strong>yourprofile</strong></li>
+                        <li><strong>yourid</strong> or <strong>yourprofile</strong> without the url</li>
+                    </ul>
+                </div>
+
                 <form class="form-inline" data-bind="submit: addPlayer">
-                    
-                    <div class="row">
-                        <div class="span5">
-                            <div class="input-prepend input-append">
-                                <span class="add-on"><i class="icon-user"></i></span>
-                                <input id="playerToAddId" type="text" class="input-large warning" placeholder="Steam ID or Name" data-bind='value: playerToAdd, valueUpdate: "afterkeydown"' />
-                                <button type="submit" class="btn" data-bind="enable: playerToAdd().length > 0">Add</button>
-                                <button class="btn" id="demo" data-toggle="tooltip" data-original-title="Instantly add 4 players<br/>for demonstration purpuses" data-placement="right">Random</button>
-                                @*<button type="submit" id="info" class="btn" data-toggle="popover" data-placement="right" data-title="Accepted formats" data-content="<ul><li>http://steamcommunity.com/id/<strong>yourid</strong></li><li>http://steamcommunity.com/profiles/<strong>yourprofile</strong></li><li><strong>yourid</strong> or <strong>yourprofile</strong> without the url</li></ul>">?</button>*@
-                            </div>
-                        </div>
-                        <div class="span7">
-                            <div id="loadingPlayer" style="display: none"><img src="Content/spin.gif"/> Fetching...</div>
-                        </div>
+                    <div class="input-prepend input-append" id="addPlayerGroup"
+                        data-placement="right" data-trigger="manual" data-container="body" data-title="Accepted formats" data-content="<ul><li>http://steamcommunity.com/id/<strong>yourid</strong></li><li>http://steamcommunity.com/profiles/<strong>yourprofile</strong></li><li><strong>yourid</strong> or <strong>yourprofile</strong> without the url</li></ul>"
+                        >
+                        <span class="add-on"><i class="icon-user"></i></span>
+                        <input id="playerToAddId" type="text" class="input-large warning" placeholder="Steam ID or Name"
+                            data-bind='value: playerToAdd, valueUpdate: "afterkeydown"' />
+                        <button type="submit" class="btn" id="playerAddBtn" style="width: 50px"
+                            data-loading-text="<img src='Content/spin.gif'/>"
+                            data-bind="enable: playerToAdd().length > 0">Add</button>
+                        <button class="btn" id="demo" data-toggle="tooltip" data-original-title="Instantly add 4 players<br/>for demonstration purpuses" data-placement="right">Demo</button>
                     </div>
-                    
-                    <p></p>
+                    <p/>
                     <div id="errorPrivateProfile" class="alert alert-block" style="display: none">
                         <h4>Private profile</h4>
                         <p>We can't compare this player because its community profile is not set to <strong>public</strong>. Steam dosen't want to tell us what games this player owns.</p>
@@ -159,11 +167,10 @@
                 <div class="alert alert-error" style="display: none" id="errorNotEnoughPlayers"><a class="close" onclick="$('#errorNotEnoughPlayers').hide()" href="#">&times;</a><strong>Whoa there big guy!</strong> Please add at least 2 players to compare</div>
         
                 <div id="resultsPane" style="display: none">
-                    <h2>Games</h2>        
                     <table class="table">
                         <thead>
                             <th>Game</th>
-                            <th>Hours played</th>
+                            <th>Hours Played</th>
                             <th>Players</th>
                         </thead>
                         <tbody data-bind="foreach: resultData">
@@ -182,14 +189,14 @@
             </div>
             <div id="push"></div>
         </div>
-        
-        <footer class="footer">
+
+        <footer class="footer" id="footer">
             <div class="container">
                 <p>Coded with love by <a href="http://spacebar.ca">Simon Carpentier</a>.</p>
                 <ul class="footer-links">
-                    <li><a href="#" id="contact" data-placement="top" data-title="Contact" data-content="Question, suggestion, comments, hate-mail? You can always reach me at <a href='mailto:simon.carpentier@spacebar.ca'>simon.carpentier@spacebar.ca</a>">Contact</a></li>
+                    <li><a href="#footer" id="contact" data-placement="top" data-title="Contact" data-content="Question, suggestion, comments, hate-mail? You can always reach me at <a href='mailto:simon.carpentier@spacebar.ca'>simon.carpentier@spacebar.ca</a>">Contact</a></li>
                     <li class="muted">&middot;</li>
-                    <li><a id="donate" data-trigger="click" data-title="Awww you're too kind <3" data-content="Obviously I'm a gamer so <a href='http://steamcommunity.com/id/dubispacebar/'>Steam gifts</a> are really appreciated.<br/>Also feel free to send some bitcoins my way:<br/><small>1NZQqgzDyqZ4HSYUDD4Y46sXkmh7w7RQm8</small>" data-placement="top" href="#">Donate</a></li>
+                    <li><a href="#footer" id="donate" data-trigger="click" data-title="Awww you're too kind <3" data-content="Obviously I'm a gamer so <a href='http://steamcommunity.com/id/dubispacebar/'>Steam gifts</a> are really appreciated.<br/>Also feel free to send some bitcoins my way:<br/><small>1NZQqgzDyqZ4HSYUDD4Y46sXkmh7w7RQm8</small>" data-placement="top">Donate</a></li>
                     <li class="muted">&middot;</li>
                     <li><a href="https://github.com/scarpentier/SteamParty/">Source code</a></li>
                     <li class="muted">&middot;</li>
