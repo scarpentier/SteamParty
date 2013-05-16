@@ -6,7 +6,7 @@ namespace SteamParty.Core.SteamObjects
     {
         public int AppId { get; set; }
         public string Name { get; set; }
-        public int? Playtime { get; set; }
+        public int? HoursPlayed { get; set; }
         public string IconUrl { get; set; }
         public string LogoUrl { get; set; }
 

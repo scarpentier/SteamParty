@@ -28,29 +28,29 @@ namespace SteamParty.Core
             {
                 foreach (var game in _api.GetOwnedGames(player))
                 {
-                    var gamePlayTime = game.Playtime;
+                    var gamePlayTime = game.HoursPlayed;
 
                     if (!gameCount.ContainsKey(game.AppId))
                     {
                         gameCount.Add(game.AppId, Tuple.Create(game, new List<Player>()));
-                        gameCount[game.AppId].Item1.Playtime = 0; // Reset playtime
+                        gameCount[game.AppId].Item1.HoursPlayed = 0; // Reset playtime
                     }
 
-                    gameCount[game.AppId].Item1.Playtime += gamePlayTime;
+                    gameCount[game.AppId].Item1.HoursPlayed += gamePlayTime;
                     gameCount[game.AppId].Item2.Add(player);
                 }
             }
 
             return (from g in gameCount
                     where g.Value.Item2.Count > 1
-                    orderby g.Value.Item2.Count descending, g.Value.Item1.Playtime descending
+                    orderby g.Value.Item2.Count descending, g.Value.Item1.HoursPlayed descending
                     select new GamePlayers()
                         {
                             AppId = g.Value.Item1.AppId,
                             IconUrl = g.Value.Item1.IconUrl,
                             LogoUrl = g.Value.Item1.LogoUrl,
                             Name = g.Value.Item1.Name,
-                            Playtime = g.Value.Item1.Playtime,
+                            HoursPlayed = g.Value.Item1.HoursPlayed,
                             Players = g.Value.Item2
                         }).ToList();
         }

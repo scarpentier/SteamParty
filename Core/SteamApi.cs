@@ -91,7 +91,7 @@ namespace SteamParty.Core
                 {
                     AppId = (int)g["appid"],
                     Name = (string)g["name"],
-                    Playtime = (int?)g["playtime_forever"],
+                    HoursPlayed = g["playtime_forever"] == null ? null : (int?)Math.Round((double)g["playtime_forever"] / 60, 0), // Playtime is expressed in minutes but we want hours
                     IconUrl = string.Format(pictureUrl, g["appid"], g["img_icon_url"]),
                     LogoUrl = string.Format(pictureUrl, g["appid"], g["img_logo_url"])
                 });

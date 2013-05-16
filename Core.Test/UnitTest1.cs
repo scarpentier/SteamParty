@@ -18,7 +18,7 @@ namespace SteamParty.Core.Test
         [TestMethod]
         public void GetOwnedGames()
         {
-            var games = _api.GetOwnedGames("76561198047894258");
+            var games = _api.GetOwnedGames("76561197975995523");
             Assert.IsTrue(games.Count > 0);
         }
 
@@ -41,9 +41,6 @@ namespace SteamParty.Core.Test
         [TestMethod]
         public void GetPlayerSummaries()
         {
-            var player = _api.GetPlayerSummary("76561198047894258");
-            Assert.AreEqual("deviantee", player.DisplayName);
-
             var player1 = _api.GetPlayerSummary("76561197975995523");
             Assert.AreEqual("ice_mouton", player1.DisplayName);
 
