@@ -19,6 +19,7 @@
                     self.playerToAdd = ko.observable("");
                     self.players = ko.observableArray([]);
                     self.resultData = ko.mapping.fromJSON("");
+                    self.previousPlayers = $.cookie("previousPlayers") ? $.cookie("previousPlayers").split(/,/) : new Array();
 
                     this.addPlayer = function () {
                         if (self.playerToAdd() != "") {
@@ -46,6 +47,11 @@
                                 if ($.grep(self.players(), function (e) { return e.SteamId == player.SteamId; }).length > 0) {
                                     $('#errorPlayerAlreadyAdded').show();
                                     return;
+                                }
+                                
+                                if ($.grep(self.previousPlayers, function(e) { return e == self.playerToAdd(); }).length == 0) {
+                                    self.previousPlayers.push(self.playerToAdd());
+                                    $.cookie("previousPlayers", self.previousPlayers.join(','));
                                 }
 
                                 self.players.push(player);
@@ -83,6 +89,7 @@
                 $('#donate').popover({ html: true });
                 $('#contact').popover({ html: true });
                 $('#infoAcceptedFormats').alert();
+                $('#playerToAddId').typeahead({ source: vm.previousPlayers });
 
                 $('#demo').tooltip({ html:true });
                 $('#demo').click(function () {
@@ -96,7 +103,6 @@
                     vm.addPlayer();
                     return false;
                 });
-                
             });
             
         </script>
@@ -124,6 +130,7 @@
                         >
                         <span class="add-on"><i class="icon-user"></i></span>
                         <input id="playerToAddId" type="text" class="input-large warning" placeholder="Steam ID or Name"
+                            data-provide="typeahead"
                             data-bind='value: playerToAdd, valueUpdate: "afterkeydown"' />
                         <button type="submit" class="btn" id="playerAddBtn" style="width: 50px"
                             data-loading-text="<img src='Content/spin.gif'/>"
