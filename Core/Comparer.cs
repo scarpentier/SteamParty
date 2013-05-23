@@ -49,6 +49,7 @@ namespace SteamParty.Core
                             AppId = g.Value.Item1.AppId,
                             IconUrl = g.Value.Item1.IconUrl,
                             LogoUrl = g.Value.Item1.LogoUrl,
+                            StoreUrl = g.Value.Item1.StoreUrl,
                             Name = g.Value.Item1.Name,
                             HoursPlayed = g.Value.Item1.HoursPlayed,
                             Players = g.Value.Item2

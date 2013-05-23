@@ -9,6 +9,7 @@ namespace SteamParty.Core.SteamObjects
         public int? HoursPlayed { get; set; }
         public string IconUrl { get; set; }
         public string LogoUrl { get; set; }
+        public string StoreUrl { get; set; }
 
         public override int GetHashCode()
         {

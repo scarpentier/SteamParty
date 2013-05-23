@@ -41,7 +41,7 @@
                                     return;
                                 }                              
                                 
-                                var player = { SteamId: json.SteamId, DisplayName: json.DisplayName, AvatarUrl32: json.AvatarUrl32 };
+                                var player = { SteamId: json.SteamId, DisplayName: json.DisplayName, AvatarUrl32: json.AvatarUrl32, ProfileUrl: json.ProfileUrl };
                                 
                                 if ($.grep(self.players(), function (e) { return e.SteamId == player.SteamId; }).length > 0) {
                                     $('#errorPlayerAlreadyAdded').show();
@@ -147,7 +147,7 @@
                             <tr>
                                 <td style="width: 75px; vertical-align: middle"><i class="icon-remove"></i><a href='#' data-bind='click: $root.removePlayer'>Remove</a></td>
                                 <td style="width: 50px; vertical-align: middle"><img data-bind="attr: {src: AvatarUrl32 }" /></td>
-                                <td style="vertical-align: middle"><span data-bind="text: DisplayName"></span></td>
+                                <td style="vertical-align: middle"><a data-bind="attr: { href: ProfileUrl }"><span data-bind="text: DisplayName"></span></a></td>
                             </tr>
                         </tbody>
                     </table>
@@ -175,11 +175,17 @@
                         </thead>
                         <tbody data-bind="foreach: resultData">
                             <tr>
-                                <td><img data-bind="attr:{src: LogoUrl, alt: Name, title: Name}" /></td>
+                                <td>
+                                    <a data-bind="attr:{href: StoreUrl}">
+                                        <img data-bind="attr:{src: LogoUrl, alt: Name, title: Name}" />
+                                    </a>
+                                </td>
                                 <td><span data-bind="text: HoursPlayed"></span></td>
                                 <td>
                                     <div data-bind="foreach: Players">
-                                        <img data-bind="attr:{src: AvatarUrl64, alt: DisplayName, title: DisplayName}" />
+                                        <a data-bind="attr:{href:ProfileUrl}">
+                                            <img data-bind="attr:{src: AvatarUrl64, alt: DisplayName, title: DisplayName}" />
+                                        </a>
                                     </div>
                                 </td>
                             </tr>

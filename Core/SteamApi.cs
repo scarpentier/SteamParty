@@ -79,6 +79,7 @@ namespace SteamParty.Core
         {
             const string serviceUrl = "/IPlayerService/GetOwnedGames/v0001/?key={0}&steamId={1}&include_appinfo=1&include_played_free_games=1&format=json";
             const string pictureUrl = "http://media.steampowered.com/steamcommunity/public/images/apps/{0}/{1}.jpg";
+            const string storeUrl = "http://store.steampowered.com/app/{0}";
 
             var url = string.Format(SteamApiBaseUrl + serviceUrl, Key, steamId);
             var jsonData = new System.Net.WebClient().DownloadString(url);
@@ -93,7 +94,8 @@ namespace SteamParty.Core
                     Name = (string)g["name"],
                     HoursPlayed = g["playtime_forever"] == null ? null : (int?)Math.Round((double)g["playtime_forever"] / 60, 0), // Playtime is expressed in minutes but we want hours
                     IconUrl = string.Format(pictureUrl, g["appid"], g["img_icon_url"]),
-                    LogoUrl = string.Format(pictureUrl, g["appid"], g["img_logo_url"])
+                    LogoUrl = string.Format(pictureUrl, g["appid"], g["img_logo_url"]),
+                    StoreUrl = string.Format(storeUrl, g["appid"])
                 });
 
             return a.ToList();
