@@ -9,6 +9,8 @@ namespace SteamParty.Core
     {
         private readonly SteamApi _api;
 
+        private static readonly int[] bannedAppIds = new [] {205790,644,223530,216370,225770};
+
         public Comparer(SteamApi api)
         {
             _api = api;
@@ -28,6 +30,9 @@ namespace SteamParty.Core
             {
                 foreach (var game in _api.GetOwnedGames(player))
                 {
+                    // Remove beta games and tools
+                    if (bannedAppIds.Contains(game.AppId)) continue;
+
                     var gamePlayTime = game.HoursPlayed;
 
                     if (!gameCount.ContainsKey(game.AppId))
