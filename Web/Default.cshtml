@@ -1,5 +1,4 @@
 ﻿<!DOCTYPE html>
-
 <html lang="en">
     <head>
         <title>SteamParty</title>
@@ -79,6 +78,7 @@
                             ko.mapping.fromJSON(data, self.resultData);
                             $("#resultsPane").show();
                             $('#loadingCompare').hide();
+                            parent.location.hash = steamIds.join(',');
                         });
                     };
                 }
@@ -103,8 +103,19 @@
                     vm.addPlayer();
                     return false;
                 });
+                
+                // Retrieve querystring for permalink
+                var ids = parent.location.hash;
+                if (ids != "") {
+                    ids = ids.replace('#', '');
+                    for (var i = 0; i < ids.split(",").length; i++) {
+                        vm.playerToAdd(ids.split(",")[i]);
+                        vm.addPlayer();
+                    }
+                    vm.getCompare();
+                }
             });
-            
+
         </script>
     </head>
     <body>
