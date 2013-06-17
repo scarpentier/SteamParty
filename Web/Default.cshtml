@@ -112,7 +112,10 @@
                         vm.playerToAdd(ids.split(",")[i]);
                         vm.addPlayer();
                     }
-                    vm.getCompare();
+                    $(document).ajaxStop(function () {
+                        $(this).unbind("ajaxStop"); // prevent running again when other calls finish
+                        vm.getCompare();
+                    });                   
                 }
             });
 
