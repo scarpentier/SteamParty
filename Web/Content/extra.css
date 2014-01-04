@@ -75,3 +75,9 @@ height: 60px;
 	max-width: 330px;
 	width: auto;
 }
+
+.game {
+    color: gray;
+    text-decoration: none;
+    font-size: smaller;
+}
