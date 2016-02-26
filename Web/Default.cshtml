@@ -2,12 +2,12 @@
 <html lang="en">
     <head>
         <title>SteamParty</title>
-        <script src="Scripts/jquery-2.0.0.min.js"></script>
-        <script src="Scripts/knockout-2.2.1.js"></script>
+        <script src="Scripts/jquery-2.2.0.min.js"></script>
+        <script src="Scripts/knockout-3.4.0.js"></script>
         <script src="Scripts/knockout.mapping-latest.js"></script>
         <script src="Scripts/bootstrap.js"></script>
-        <script src="Scripts/jquery.cookie.js"></script>
-        <link href="Content/bootstrap.css" rel="stylesheet" />
+        <script src="Scripts/jquery.cookie-1.4.1.min.js"></script>
+        <link href="Content/bootstrap.min.css" rel="stylesheet" />
         <link href="Content/extra.css" rel="stylesheet" />
         <script type="text/javascript">
 
@@ -17,7 +17,7 @@
                     var self = this;
                     self.playerToAdd = ko.observable("");
                     self.players = ko.observableArray([]);
-                    self.resultData = ko.mapping.fromJSON("");
+                    self.resultData = ko.mapping.fromJS("");
                     self.previousPlayers = $.cookie("previousPlayers") ? $.cookie("previousPlayers").split(/,/) : new Array();
 
                     this.addPlayer = function () {
@@ -75,7 +75,7 @@
                             steamIds.push(self.players()[i].SteamId);
                         }
                         $.getJSON('/compare', { steamids: steamIds.join(',') }, function (data) {
-                            ko.mapping.fromJSON(data, self.resultData);
+                            ko.mapping.fromJS(data, self.resultData);
                             $("#resultsPane").show();
                             $('#loadingCompare').hide();
                             parent.location.hash = steamIds.join(',');

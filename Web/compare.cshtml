@@ -1,7 +1,6 @@
 ﻿@using System
 @using System.Configuration
-@using System.Linq
-@using System.Web.Helpers
+@using System.Web.Script.Serialization
 @using SteamParty.Core
 @{
     var steamIds = Request.QueryString["steamIds"].Split(',');
@@ -11,6 +10,8 @@
     var comparer = new Comparer(api);
 
     var games = comparer.Compare(steamIds);
+
+    var r = new JavaScriptSerializer() { MaxJsonLength = Int32.MaxValue };
     
-    Json.Write(Json.Encode(games), Response.Output);
+    Response.Write(r.Serialize(games));
 }
