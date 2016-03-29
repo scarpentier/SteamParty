@@ -82,7 +82,9 @@ namespace SteamParty.Core
             const string storeUrl = "http://store.steampowered.com/app/{0}";
 
             var url = string.Format(SteamApiBaseUrl + serviceUrl, Key, steamId);
-            var jsonData = new System.Net.WebClient().DownloadString(url);
+            var webclient = new System.Net.WebClient() { Encoding = System.Text.Encoding.UTF8 };
+
+            var jsonData = webclient.DownloadString(url);
 
             var o = JObject.Parse(jsonData);
 
