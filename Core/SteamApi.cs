@@ -90,6 +90,8 @@ namespace SteamParty.Core
 
             if (!o["response"].Any()) return null; // Will happen if the profile isn't public
 
+            if (o["response"]["game_count"].Value<int>() == 0) return new List<Game>(); // Will happen if the profile has no games at all
+
             var a = o["response"]["games"].Select(g => new Game
                 {
                     AppId = (int)g["appid"],
